@@ -39,8 +39,6 @@ def add_company():
         return jsonify({"error": str(e), "status_code": 500}), 500
 
 
-#вакансии, компании, людей, отклики
-
 @api_blueprint.route('/companies/<int:company_id>', methods=['PUT'])
 def update_company(company_id):
     try:
