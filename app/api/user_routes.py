@@ -21,15 +21,26 @@ def get_users():
 
 @api_blueprint.route('/users', methods=['POST'])
 def add_user():
-    user_data = request.json
-    user = UserSchema().load(user_data)
-    db.session.add(user)
-    db.session.commit()
-    response = {
-        "result": UserSchema().dump(user),
-        "status_code": 201
-    }
-    return jsonify(response), 201
+    try:
+        user_data = request.json
+
+        # Проверка на уникальность пользователя
+        if User.query.filter_by(email=user_data.get('email')).first():
+            return jsonify({"error": "User with this email already exists", "status_code": 400}), 400
+
+        # Если пользователя с таким email нет, добавляем его в базу данных
+        user = UserSchema().load(user_data)
+        db.session.add(user)
+        db.session.commit()
+        response = {
+            "result": UserSchema().dump(user),
+            "status_code": 201
+        }
+        return jsonify(response), 201
+    except ValidationError as ve:
+        return jsonify({"error": str(ve), "status_code": 400}), 400
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500
 
 
 @api_blueprint.route('/users/<int:user_id>', methods=['PUT'])
@@ -46,4 +57,3 @@ def update_user(user_id):
         return jsonify({"error": str(ve), "status_code": 400}), 400
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
-

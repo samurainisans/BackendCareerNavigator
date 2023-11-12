@@ -5,8 +5,6 @@ from marshmallow import fields
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
-    password = fields.Str(load_only=True)
-
     class Meta:
         model = User
         load_instance = True
