@@ -86,10 +86,46 @@ def update_job(job_id):
         job = Job.query.get(job_id)
         if not job:
             return create_response({"error": "Job not found"}, 404)
-        job = JobSchema().load(job_data, instance=job, partial=True)
+
+        # Преобразование date_posted из строки в datetime, если оно есть
+        if 'date_posted' in job_data and job_data['date_posted']:
+            job_data['date_posted'] = datetime.fromisoformat(job_data['date_posted'])
+
+        # Обновление данных job
+        if 'work_type' in job_data:
+            work_type_data = job_data.pop('work_type')
+            work_type = WorkType.query.filter_by(type_id=work_type_data['type_id']).first()
+            if work_type:
+                job.type_id = work_type.type_id
+
+        if 'city' in job_data:
+            city_data = job_data.pop('city')
+            city = City.query.filter_by(city_id=city_data['city_id']).first()
+            if city:
+                job.city_id = city.city_id
+
+        if 'employment' in job_data:
+            employment_data = job_data.pop('employment')
+            employment = Employment.query.filter_by(employment_id=employment_data['employment_id']).first()
+            if employment:
+                job.employment_id = employment.employment_id
+
+        if 'company' in job_data:
+            company_data = job_data.pop('company')
+            company = Company.query.filter_by(company_id=company_data['company_id']).first()
+            if company:
+                job.company_id = company.company_id
+
+        for key, value in job_data.items():
+            if hasattr(job, key):
+                setattr(job, key, value)
+
         db.session.commit()
-        # Используем функцию для создания ответа
+
         return create_response(JobSchema().dump(job), 200)
+    except IntegrityError as ie:
+        db.session.rollback()
+        return create_response({"error": str(ie)}, 400)
     except ValidationError as ve:
         return create_response({"error": str(ve)}, 400)
     except Exception as e:
