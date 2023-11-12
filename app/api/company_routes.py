@@ -27,7 +27,7 @@ def add_company():
         industry_data = company_data.pop('industry')
         industry = Industry(**industry_data)
         db.session.merge(industry)
-        db.session.flush()  # This will set the industry_id
+        db.session.flush()
         company_data['industry_id'] = industry.industry_id
         company = Company(**company_data)
         db.session.merge(company)
