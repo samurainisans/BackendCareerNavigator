@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from marshmallow import ValidationError
 
 from app import db
 from app.api.user_routes import api_blueprint
@@ -24,10 +25,15 @@ def add_job_application():
 
 @api_blueprint.route('/jobapplications/<int:application_id>', methods=['PUT'])
 def update_job_application(application_id):
-    job_application_data = request.json
-    job_application = JobApplication.query.get_or_404(application_id)
-    # Проверка на принадлежность к компании (нужна дополнительная логика)
-    job_application = JobApplicationSchema().load(job_application_data, instance=job_application)
-    db.session.commit()
-    return jsonify(JobApplicationSchema().dump(job_application))
-
+    try:
+        application_data = request.json
+        application = JobApplication.query.get(application_id)
+        if not application:
+            return jsonify({"error": "JobApplication not found", "status_code": 404}), 404
+        application = JobApplicationSchema().load(application_data, instance=application, partial=True)
+        db.session.commit()
+        return jsonify({"result": JobApplicationSchema().dump(application), "status_code": 200}), 200
+    except ValidationError as ve:
+        return jsonify({"error": str(ve), "status_code": 400}), 400
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500

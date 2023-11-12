@@ -7,12 +7,10 @@ from marshmallow import fields
 
 
 class CompanySchema(ma.SQLAlchemyAutoSchema):
-    industry = fields.Method("get_industry")
+    industry = fields.Nested(IndustrySchema)
 
     class Meta:
         model = Company
         fields = ("company_id", "name", "description", "logo_url", "industry")
+        load_instance = True
 
-    def get_industry(self, obj):
-        industry = Industry.query.get(obj.industry_id)
-        return IndustrySchema().dump(industry)
