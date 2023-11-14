@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 from faker import Faker
 from flask import Flask
+from flask_jwt_extended import JWTManager
+
 from app.extensions import db, ma
 from app.models.city import City
 from app.models.company import Company
@@ -21,6 +23,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['JWT_SECRET_KEY'] = 'your-secret-key'
+    jwt = JWTManager(app)
 
     db.init_app(app)
     ma.init_app(app)

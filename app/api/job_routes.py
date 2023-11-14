@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlite3 import IntegrityError
 
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 
 from app import db
@@ -11,6 +12,7 @@ from app.models.company import Company
 from app.models.employment import Employment
 
 from app.models.job import Job
+from app.models.jobapplication import JobApplication
 from app.models.worktype import WorkType
 from app.schemas.jobschema import JobSchema
 from app.schemas.worktypeschema import WorkTypeSchema
@@ -21,10 +23,22 @@ def create_response(data, status_code=200):
 
 
 @api_blueprint.route('/jobs', methods=['GET'])
+@jwt_required()  # Добавлен декоратор для проверки токена
 def get_jobs():
-    jobs = Job.query.all()
-    # Используем функцию для создания ответа
-    return create_response(JobSchema(many=True).dump(jobs), 200)
+    try:
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        # Получаем список ID вакансий, на которые пользователь уже откликнулся
+        applied_job_ids = [job_application.job_id for job_application in JobApplication.query.filter_by(user_id=user_id)]
+
+        # Получаем вакансии, на которые пользователь еще не откликнулся
+        jobs = Job.query.filter(~Job.job_id.in_(applied_job_ids)).all()
+
+        # Используем функцию для создания ответа
+        return create_response(JobSchema(many=True).dump(jobs), 200)
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500
 
 
 @api_blueprint.route('/jobs', methods=['POST'])

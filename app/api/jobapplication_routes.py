@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 
 from app import db
@@ -11,50 +12,58 @@ from app.models.jobapplication import JobApplication
 from app.models.user import User
 from app.schemas.jobapplicationschema import JobApplicationSchema
 
-
 @api_blueprint.route('/jobapplications', methods=['GET'])
+@jwt_required()
 def get_job_applications():
     try:
-        job_applications = JobApplication.query.all()
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        # Фильтруем отклики только для текущего пользователя
+        job_applications = JobApplication.query.filter_by(user_id=user_id).all()
+
         return jsonify({"status_code": 200, "result": JobApplicationSchema(many=True).dump(job_applications)}), 200
     except Exception as e:
         return jsonify({"status_code": 500, "error": str(e)}), 500
 
+
 @api_blueprint.route('/jobapplications', methods=['POST'])
+@jwt_required()
 def add_job_application():
     try:
-        job_application_data = request.json
-        # Преобразование application_date из строки в datetime, если оно есть
-        if 'application_date' in job_application_data and job_application_data['application_date']:
-            job_application_data['application_date'] = datetime.fromisoformat(job_application_data['application_date'])
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
 
+        job_id = request.args.get('jobId')  # Получаем jobId из query parameters
+        if job_id is None:
+            return jsonify({"status_code": 400, "msg": "JobId is required in query parameters"}), 400
 
-        # Обработка данных для job
-        if 'job' in job_application_data:
-            job_data = job_application_data.pop('job')
-            job = Job.query.get(job_data.get('job_id'))
-            if not job:
-                return jsonify({"status_code": 404, "error": "Job not found"}), 404
-            job_application_data['job_id'] = job.job_id
+        # Проверяем, что job_id является целым числом
+        try:
+            job_id = int(job_id)
+        except ValueError:
+            return jsonify({"status_code": 400, "msg": "JobId must be an integer"}), 400
 
-        # Обработка данных для user
-        if 'user' in job_application_data:
-            user_data = job_application_data.pop('user')
-            user = User.query.get(user_data.get('user_id'))
-            if not user:
-                return jsonify({"status_code": 404, "error": "User not found"}), 404
-            job_application_data['user_id'] = user.user_id
+        # Проверяем, что job с таким id существует
+        job = Job.query.get(job_id)
+        if not job:
+            return jsonify({"status_code": 404, "msg": "Job not found"}), 404
 
         # Создаем новый объект JobApplication
+        job_application_data = {
+            'user_id': user_id,
+            'job_id': job_id,
+            'application_date': datetime.utcnow(),
+            'status': 'на рассмотрении'
+        }
+
         job_application = JobApplication(**job_application_data)
         db.session.add(job_application)
         db.session.commit()
 
-        return jsonify({"status_code": 201, "result": JobApplicationSchema().dump(job_application)}), 201
-    except ValidationError as ve:
-        return jsonify({"status_code": 400, "error": str(ve)}), 400
+        return jsonify({"status_code": 201, "msg": "Job application added successfully"}), 201
     except Exception as e:
-        return jsonify({"status_code": 500, "error": str(e)}), 500
+        return jsonify({"status_code": 500, "msg": str(e)}), 500
 
 @api_blueprint.route('/jobapplications/<int:application_id>', methods=['PUT'])
 def update_job_application(application_id):
