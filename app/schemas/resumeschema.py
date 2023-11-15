@@ -12,7 +12,7 @@ class ResumeSchema(ma.SQLAlchemyAutoSchema):
         model = Resume
         load_instance = True
         fields = (
-            "resume_id", "user", "summary", "experience", "education", "skills", "certifications", "personal_info",
+            "title, resume_id", "user", "summary", "experience", "education", "skills", "certifications", "personal_info",
             "contact_info")
 
     def get_user(self, obj):

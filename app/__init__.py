@@ -1,4 +1,5 @@
 import os
+import random
 
 from faker import Faker
 from flask import Flask
@@ -18,6 +19,7 @@ from app.models.worktype import WorkType
 
 load_dotenv()
 
+
 def create_app():
     app = Flask(__name__)
 
@@ -25,8 +27,6 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-
-    jwt = JWTManager(app)
 
     db.init_app(app)
     ma.init_app(app)
@@ -51,10 +51,11 @@ def create_app():
     #         db.session.add(city)
     #
     #     for _ in range(10):
-    #         user = User(username=fake.user_name(), email=fake.email(), password=fake.password(), role='user')
+    #         user = User(username=fake.user_name(), email=fake.email(), password=fake.password(), role=random.choice(
+    #             ['employer', 'user'])
+    #         )
     #         db.session.add(user)
     #
-    #     # Генерация данных для Company
     #     for _ in range(5):
     #         company = Company(name=fake.company(), industry_id=fake.random_int(min=1, max=3), description=fake.text(),
     #                           logo_url=fake.image_url())
@@ -64,10 +65,12 @@ def create_app():
     #         job = Job(title=fake.job(), description=fake.text(), salary=fake.random_int(min=10000, max=100000),
     #                   experience=fake.job(), company_id=fake.random_int(min=1, max=10),
     #                   type_id=fake.random_int(min=1, max=3),
-    #                   city_id=fake.random_int(min=1, max=10), employment_id=fake.random_int(min=1, max=3))
+    #                   city_id=fake.random_int(min=1, max=10), employment_id=fake.random_int(min=1, max=3),
+    #                   requirements=fake.text())
     #         db.session.add(job)
     #
     #     job_application_statuses = ["Принято", "Отклонено", "На рассмотрении"]
+    #
     #     for _ in range(10):
     #         jobapplication = JobApplication(
     #             resume_id=fake.random_int(min=1, max=50),
@@ -90,12 +93,13 @@ def create_app():
     #
     #     for user_id in range(1, 16):
     #         resume = Resume(
+    #             title=fake.job(),
     #             user_id=user_id,
-    #             description=fake.text(max_nb_chars=200),
-    #             experience=fake.text(max_nb_chars=500),
-    #             education=fake.text(max_nb_chars=300),
-    #             skills=fake.text(max_nb_chars=200),
-    #             contact_info=fake.text(max_nb_chars=200),
+    #             description=fake.text(max_nb_chars=500),
+    #             experience=fake.text(max_nb_chars=100),
+    #             education=fake.text(max_nb_chars=100),
+    #             skills=fake.text(max_nb_chars=100),
+    #             contact_info=fake.text(max_nb_chars=100),
     #         )
     #         db.session.add(resume)
     #
