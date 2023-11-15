@@ -46,6 +46,12 @@ def add_job_application():
         if not job_id or not resume_id:
             return jsonify({"msg": "Job ID and Resume ID are required", "status_code": 400}), 400
 
+        # Проверка на существование сочетания resumeId и jobId
+        existing_application = JobApplication.query.filter_by(job_id=job_id, resume_id=resume_id).first()
+
+        if existing_application:
+            return jsonify({"msg": "Resume has already been submitted for this job", "status_code": 406}), 406
+
         # Создание и сохранение новой заявки на работу
         job_application = JobApplication(job_id=job_id, resume_id=resume_id, status='На рассмотрении')
         db.session.add(job_application)
