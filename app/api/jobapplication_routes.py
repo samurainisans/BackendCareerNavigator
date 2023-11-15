@@ -46,7 +46,6 @@ def add_job_application():
         return jsonify({"msg": str(e), "status_code": 500}), 500
 
 
-
 @api_blueprint.route('/jobapplications/<int:application_id>', methods=['PUT'])
 def update_job_application(application_id):
     try:

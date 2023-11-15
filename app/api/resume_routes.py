@@ -64,12 +64,16 @@ def get_all_resumes():
 def update_resume(resume_id):
     try:
         resume_data = request.json
+
+        resume_data.pop('user', None)
+
         resume = Resume.query.get(resume_id)
         if not resume:
             return jsonify({"error": "Resume not found", "status_code": 404}), 404
+
         resume = ResumeSchema().load(resume_data, instance=resume, partial=True)
         db.session.commit()
-        return jsonify({"result": ResumeSchema().dump(resume), "status_code": 200}), 200
+        return jsonify({"msg": "Resume updated successfully", "status_code": 200}), 200
     except ValidationError as ve:
         return jsonify({"error": str(ve), "status_code": 400}), 400
     except Exception as e:
@@ -84,6 +88,6 @@ def delete_resume(resume_id):
             return jsonify({"error": "Resume not found", "status_code": 404}), 404
         db.session.delete(resume)
         db.session.commit()
-        return jsonify({"message": "Resume deleted successfully", "status_code": 200}), 200
+        return jsonify({"msg": "Resume deleted successfully", "status_code": 200}), 200
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500

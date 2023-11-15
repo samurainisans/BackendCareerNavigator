@@ -9,11 +9,9 @@ from flask_jwt_extended import JWTManager
 api_blueprint = Blueprint('api', __name__)
 jwt = JWTManager()
 
-
 def create_token(user_id, role):
     access_token = create_access_token(identity={"user_id": user_id, "role": role})
     return access_token
-
 
 @api_blueprint.route('/login', methods=['POST'])
 def login():
@@ -24,11 +22,11 @@ def login():
 
         user = User.query.filter_by(email=email, password=password).first()
         if not user:
-            return jsonify({"error": "Invalid credentials", "status_code": 401}), 401
+            return jsonify({"error": "Invalid credentials", "msg": "Login or password incorrect", "status_code": 401}), 401
 
         access_token = create_token(user.user_id, user.role)
 
-        return jsonify({"access_token": access_token, "status_code": 200}), 200
+        return jsonify({"access_token": access_token, "msg": "Login successful", "status_code": 200}), 200
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
 
@@ -39,7 +37,7 @@ def register():
         user_data = request.json
 
         if User.query.filter_by(email=user_data.get('email')).first():
-            return jsonify({"error": "User with this email already exists", "status_code": 400}), 400
+            return jsonify({"error": "User with this email already exists", "msg": "User already exists", "status_code": 400}), 400
 
         user = UserSchema().load(user_data)
         db.session.add(user)
@@ -50,7 +48,7 @@ def register():
         response = {
             "access_token": access_token,
             "status_code": 201,
-            "message": "Registration successful"
+            "msg": "Registration successful"
         }
         return jsonify(response), 201
     except ValidationError as ve:
