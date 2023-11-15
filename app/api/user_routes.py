@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 from app import db
+from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.userschema import UserSchema
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -64,16 +65,56 @@ def protected():
     return jsonify(logged_in_as=current_user), 200
 
 
-@api_blueprint.route('/users', methods=['GET'])
-def get_users():
+from flask import Blueprint, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+user_blueprint = Blueprint('user', __name__)
+
+@api_blueprint.route('/user', methods=['GET'])
+@jwt_required()
+def get_user():
     try:
-        users = User.query.all()
-        if not users:
-            return jsonify({"error": "No users found", "status_code": 404}), 404
-        return jsonify({"result": UserSchema(many=True).dump(users), "status_code": 200}), 200
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        # Получение пользователя из базы данных по его ID
+        user = User.query.get(user_id)
+
+        if not user:
+            return jsonify({"error": "User not found", "status_code": 404}), 404
+
+        # Получение резюме пользователя из базы данных
+        resumes = Resume.query.filter_by(user_id=user.user_id).all()
+
+        # Преобразование резюме в список словарей
+        resumes_data = []
+        for resume in resumes:
+            resume_data = {
+                "id": resume.resume_id,
+                "title": resume.title,
+                "description": resume.description,
+                "experience": resume.experience,
+                "education": resume.education,
+                "skills": resume.skills,
+                "contact_info": resume.contact_info
+            }
+            resumes_data.append(resume_data)
+
+        # Возвращаем данные пользователя и его резюме
+        user_data = {
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "phone_number": user.phone_number,
+            "role": user.role,
+            "email": user.email,
+            "resumes": resumes_data
+        }
+
+        return jsonify({"user": user_data, "status_code": 200}), 200
+
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
-
 
 @api_blueprint.route('/users', methods=['POST'])
 def add_user():

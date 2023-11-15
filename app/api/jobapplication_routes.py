@@ -9,6 +9,7 @@ from app.api.user_routes import api_blueprint
 from app.models.job import Job
 
 from app.models.jobapplication import JobApplication
+from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.jobapplicationschema import JobApplicationSchema
 
@@ -17,21 +18,30 @@ from app.schemas.jobapplicationschema import JobApplicationSchema
 @jwt_required()
 def get_job_applications():
     try:
-        job_applications = JobApplication.query.all()
+        # Шаг 1: Получить идентификатор пользователя из токена
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        # Шаг 2: Фильтровать отклики по идентификатору пользователя
+        job_applications = JobApplication.query \
+            .join(Resume, JobApplication.resume_id == Resume.resume_id) \
+            .filter(Resume.user_id == user_id) \
+            .all()
+
+        # Возвращать только отфильтрованные отклики
         return jsonify({"status_code": 200, "result": JobApplicationSchema(many=True).dump(job_applications)}), 200
     except Exception as e:
         return jsonify({"status_code": 500, "error": str(e)}), 500
+
 
 
 @api_blueprint.route('/jobapplications', methods=['POST'])
 @jwt_required()
 def add_job_application():
     try:
-        application_data = request.json
-
-        # Извлекаем job_id и resume_id из вложенных объектов
-        job_id = application_data.get('job', {}).get('job_id')
-        resume_id = application_data.get('resume', {}).get('resume_id')
+        # Извлекаем параметры job_id и resume_id из строки запроса
+        job_id = request.args.get('job_id')
+        resume_id = request.args.get('resume_id')
 
         if not job_id or not resume_id:
             return jsonify({"msg": "Job ID and Resume ID are required", "status_code": 400}), 400

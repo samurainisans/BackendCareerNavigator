@@ -23,11 +23,12 @@ def add_resume():
 
         new_resume = Resume(
             user_id=user_id,
+            title=resume_data.get('title', ''),
             description=resume_data.get('description', ''),
             experience=resume_data.get('experience', ''),
             education=resume_data.get('education', ''),
             skills=resume_data.get('skills', ''),
-            contact_info=resume_data.get('contact_info', '')
+            contact_info=resume_data.get('contactInfo', '')
         )
 
         db.session.add(new_resume)

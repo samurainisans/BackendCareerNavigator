@@ -30,6 +30,7 @@ def create_app():
 
     db.init_app(app)
     ma.init_app(app)
+    jwt = JWTManager(app)
 
     from app.api.user_routes import api_blueprint
     from app.api.city_routes import api_blueprint
