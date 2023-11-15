@@ -15,27 +15,24 @@ from app.models.job import Job
 from app.models.jobapplication import JobApplication
 from app.models.worktype import WorkType
 from app.schemas.jobschema import JobSchema
-from app.schemas.worktypeschema import WorkTypeSchema
 
-# Функция для оборачивания ответа в нужный формат
+
 def create_response(data, status_code=200):
     return jsonify({"result": data, "status_code": status_code}), status_code
 
-
 @api_blueprint.route('/jobs', methods=['GET'])
-@jwt_required()  # Добавлен декоратор для проверки токена
+@jwt_required()
 def get_jobs():
     try:
         current_user = get_jwt_identity()
         user_id = current_user['user_id']
+        print(user_id)
 
-        # Получаем список ID вакансий, на которые пользователь уже откликнулся
-        applied_job_ids = [job_application.job_id for job_application in JobApplication.query.filter_by(user_id=user_id)]
+        applied_job_ids = [job_application.job_id for job_application in
+                           JobApplication.query.filter_by(user_id=user_id)]
 
-        # Получаем вакансии, на которые пользователь еще не откликнулся
         jobs = Job.query.filter(~Job.job_id.in_(applied_job_ids)).all()
 
-        # Используем функцию для создания ответа
         return create_response(JobSchema(many=True).dump(jobs), 200)
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
@@ -45,11 +42,9 @@ def get_jobs():
 def add_job():
     try:
         job_data = request.json
-        # Преобразование date_posted из строки в datetime, если оно есть
         if 'date_posted' in job_data and job_data['date_posted']:
             job_data['date_posted'] = datetime.fromisoformat(job_data['date_posted'])
 
-        # Проверяем и обрабатываем вложенные данные
         if 'work_type' in job_data:
             work_type_data = job_data.pop('work_type')
             work_type = WorkType.query.filter_by(type_id=work_type_data['type_id']).first()
@@ -78,7 +73,6 @@ def add_job():
                 return create_response({"error": "Company not found"}, 404)
             job_data['company_id'] = company.company_id
 
-        # Создаем новый объект Job
         job = Job(**job_data)
         db.session.add(job)
         db.session.commit()
@@ -101,11 +95,9 @@ def update_job(job_id):
         if not job:
             return create_response({"error": "Job not found"}, 404)
 
-        # Преобразование date_posted из строки в datetime, если оно есть
         if 'date_posted' in job_data and job_data['date_posted']:
             job_data['date_posted'] = datetime.fromisoformat(job_data['date_posted'])
 
-        # Обновление данных job
         if 'work_type' in job_data:
             work_type_data = job_data.pop('work_type')
             work_type = WorkType.query.filter_by(type_id=work_type_data['type_id']).first()

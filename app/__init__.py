@@ -11,6 +11,7 @@ from app.models.employment import Employment
 from app.models.industry import Industry
 from app.models.job import Job
 from app.models.jobapplication import JobApplication
+from app.models.resume import Resume
 from app.models.user import User
 from app.models.worktype import WorkType
 
@@ -23,7 +24,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = 'your-secret-key'
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+
     jwt = JWTManager(app)
 
     db.init_app(app)
@@ -37,6 +39,7 @@ def create_app():
     from app.api.employment_routes import api_blueprint
     from app.api.worktype_routes import api_blueprint
     from app.api.industry_routes import api_blueprint
+    from app.api.resume_routes import api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
     # fake = Faker('ru_RU')
@@ -89,6 +92,18 @@ def create_app():
     #     for _ in range(3):  # Пример для 3 отраслей
     #         industry = Industry(title=fake.job())
     #         db.session.add(industry)
+    #
+    #     # Генерация данных для Resume
+    #     for user_id in range(1, 51):  # Для каждого пользователя (50 пользователей)
+    #         resume = Resume(
+    #             user_id=user_id,
+    #             description=fake.text(max_nb_chars=200),
+    #             experience=fake.text(max_nb_chars=500),
+    #             education=fake.text(max_nb_chars=300),
+    #             skills=fake.text(max_nb_chars=200),
+    #             contact_info=fake.text(max_nb_chars=200),
+    #         )
+    #         db.session.add(resume)
     #
     #     db.session.commit()
 

@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required, JWTManager
 from marshmallow import ValidationError
 
 from app import db
@@ -6,8 +7,8 @@ from app.api.user_routes import api_blueprint
 from app.models.company import Company
 from app.models.industry import Industry
 from app.schemas.companyschema import CompanySchema
-from app.schemas.industryschema import IndustrySchema
 
+jwt = JWTManager()
 
 @api_blueprint.route('/companies', methods=['GET'])
 def get_companies():
@@ -21,6 +22,7 @@ def get_companies():
 
 
 @api_blueprint.route('/companies', methods=['POST'])
+@jwt_required()
 def add_company():
     try:
         company_data = request.json
@@ -32,25 +34,25 @@ def add_company():
         company = Company(**company_data)
         db.session.merge(company)
         db.session.commit()
-        return jsonify({"result": CompanySchema().dump(company), "status_code": 201}), 201
+        return jsonify({"msg": "Company added successfully", "status_code": 201}), 201
     except ValidationError as ve:
-        return jsonify({"error": str(ve), "status_code": 400}), 400
+        return jsonify({"msg": str(ve), "status_code": 400}), 400
     except Exception as e:
-        return jsonify({"error": str(e), "status_code": 500}), 500
+        return jsonify({"msg": str(e), "status_code": 500}), 500
 
 
 @api_blueprint.route('/companies/<int:company_id>', methods=['PUT'])
+@jwt_required()
 def update_company(company_id):
     try:
         company_data = request.json
         company = Company.query.get(company_id)
         if not company:
-            return jsonify({"error": "Company not found", "status_code": 404}), 404
+            return jsonify({"msg": "Company not found", "status_code": 404}), 404
         company = CompanySchema().load(company_data, instance=company, partial=True)
         db.session.commit()
-        return jsonify({"result": CompanySchema().dump(company), "status_code": 200}), 200
+        return jsonify({"msg": "Company updated successfully", "status_code": 200}), 200
     except ValidationError as ve:
-        return jsonify({"error": str(ve), "status_code": 400}), 400
+        return jsonify({"msg": str(ve), "status_code": 400}), 400
     except Exception as e:
-        return jsonify({"error": str(e), "status_code": 500}), 500
-
+        return jsonify({"msg": str(e), "status_code": 500}), 500
