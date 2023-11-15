@@ -20,18 +20,22 @@ from app.schemas.jobschema import JobSchema
 def create_response(data, status_code=200):
     return jsonify({"result": data, "status_code": status_code}), status_code
 
+
 @api_blueprint.route('/jobs', methods=['GET'])
 @jwt_required()
 def get_jobs():
     try:
         current_user = get_jwt_identity()
         user_id = current_user['user_id']
-        print(user_id)
 
         applied_job_ids = [job_application.job_id for job_application in
-                           JobApplication.query.filter_by(user_id=user_id)]
+                           JobApplication.query.filter_by(resume_id=user_id)]
+
+        print('applied_job_ids', applied_job_ids)
 
         jobs = Job.query.filter(~Job.job_id.in_(applied_job_ids)).all()
+
+        print('jobs', jobs)
 
         return create_response(JobSchema(many=True).dump(jobs), 200)
     except Exception as e:
@@ -77,7 +81,7 @@ def add_job():
         db.session.add(job)
         db.session.commit()
 
-        return create_response(JobSchema().dump(job), 201)
+        return jsonify({"msg": "Job added successfully", "status_code": 201}), 201
     except IntegrityError as ie:
         db.session.rollback()
         return create_response({"error": str(ie)}, 400)
@@ -128,7 +132,7 @@ def update_job(job_id):
 
         db.session.commit()
 
-        return create_response(JobSchema().dump(job), 200)
+        return jsonify({"msg": "Job updated", "status_code": 200}), 200
     except IntegrityError as ie:
         db.session.rollback()
         return create_response({"error": str(ie)}, 400)

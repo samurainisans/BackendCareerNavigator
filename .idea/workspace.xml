@@ -7,10 +7,8 @@
     <list default="true" id="aa97dbf0-b25f-455d-bfe1-06132b2c936b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/company_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/company_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/company.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/company.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/jobapplication.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/jobapplication.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/companyschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/companyschema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/industry_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/industry_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/job_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/job_routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
