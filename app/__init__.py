@@ -1,7 +1,7 @@
 import os
-from dotenv import load_dotenv
-from faker import Faker
+
 from flask import Flask
+from flask.cli import load_dotenv
 from flask_jwt_extended import JWTManager
 
 from app.extensions import db, ma
@@ -16,7 +16,6 @@ from app.models.user import User
 from app.models.worktype import WorkType
 
 load_dotenv()
-
 
 def create_app():
     app = Flask(__name__)

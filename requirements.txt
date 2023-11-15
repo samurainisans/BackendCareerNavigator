@@ -1,7 +1,7 @@
 Flask
-Flask-SQLAlchemy
 Flask-Marshmallow
+Flask-SQLAlchemy
 marshmallow-sqlalchemy
 python-dotenv
 Faker
-dotenv
+flask-jwt-extended
