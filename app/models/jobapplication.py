@@ -7,3 +7,5 @@ class JobApplication(db.Model):
     resume_id = db.Column(db.Integer, db.ForeignKey('resume.resume_id'), nullable=False)
     application_date = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(120), nullable=False)
+
+

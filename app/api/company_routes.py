@@ -49,7 +49,9 @@ def update_company(company_id):
         company = Company.query.get(company_id)
         if not company:
             return jsonify({"msg": "Company not found", "status_code": 404}), 404
-        company = CompanySchema().load(company_data, instance=company, partial=True)
+        industry_data = company_data.pop('industry')
+        industry = Industry(**industry_data)
+        db.session.merge(industry)
         db.session.commit()
         return jsonify({"msg": "Company updated successfully", "status_code": 200}), 200
     except ValidationError as ve:

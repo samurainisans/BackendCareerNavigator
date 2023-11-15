@@ -1,5 +1,6 @@
 import os
 
+from faker import Faker
 from flask import Flask
 from flask.cli import load_dotenv
 from flask_jwt_extended import JWTManager
@@ -41,69 +42,63 @@ def create_app():
     from app.api.resume_routes import api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
-    # fake = Faker('ru_RU')
-    #
-    # with app.app_context():
-    #     db.create_all()
-    #     # Генерация данных для City
-    #     for _ in range(10):  # Пример для 10 городов
-    #         city = City(title=fake.city())
-    #         db.session.add(city)
-    #
-    #     # Генерация данных для User
-    #     for _ in range(50):  # Пример для 50 пользователей
-    #         user = User(username=fake.user_name(), email=fake.email(), password=fake.password(), role='user')
-    #         db.session.add(user)
-    #
-    #     # Генерация данных для Company
-    #     for _ in range(10):  # Пример для 10 компаний
-    #         company = Company(name=fake.company(), industry_id=fake.random_int(min=1, max=3), description=fake.text(),
-    #                           logo_url=fake.image_url())
-    #         db.session.add(company)
-    #
-    #     # Генерация данных для Job
-    #     for _ in range(50):  # Пример для 50 вакансий
-    #         job = Job(title=fake.job(), description=fake.text(), salary=fake.random_int(min=10000, max=100000),
-    #                   experience=fake.job(), company_id=fake.random_int(min=1, max=10),
-    #                   type_id=fake.random_int(min=1, max=3),
-    #                   city_id=fake.random_int(min=1, max=10), employment_id=fake.random_int(min=1, max=3))
-    #         db.session.add(job)
-    #
-    #     # Генерация данных для JobApplication
-    #     job_application_statuses = ["Принято", "Отклонено", "На рассмотрении"]
-    #     for _ in range(50):  # Пример для 50 заявок
-    #         jobapplication = JobApplication(
-    #             user_id=fake.random_int(min=1, max=50),
-    #             job_id=fake.random_int(min=1, max=50),
-    #             status=fake.random_element(job_application_statuses)  # Случайный выбор статуса
-    #         )
-    #         db.session.add(jobapplication)
-    #
-    #     for _ in range(3):  # Пример для 3 типов занятости
-    #         employment = Employment(title=fake.job())
-    #         db.session.add(employment)
-    #
-    #     for _ in range(3):  # Пример для 3 типов работы
-    #         worktype = WorkType(title=fake.job())
-    #         db.session.add(worktype)
-    #
-    #     # Генерация данных для Industry
-    #     for _ in range(3):  # Пример для 3 отраслей
-    #         industry = Industry(title=fake.job())
-    #         db.session.add(industry)
-    #
-    #     # Генерация данных для Resume
-    #     for user_id in range(1, 51):  # Для каждого пользователя (50 пользователей)
-    #         resume = Resume(
-    #             user_id=user_id,
-    #             description=fake.text(max_nb_chars=200),
-    #             experience=fake.text(max_nb_chars=500),
-    #             education=fake.text(max_nb_chars=300),
-    #             skills=fake.text(max_nb_chars=200),
-    #             contact_info=fake.text(max_nb_chars=200),
-    #         )
-    #         db.session.add(resume)
-    #
-    #     db.session.commit()
+    fake = Faker('ru_RU')
+
+    with app.app_context():
+        db.create_all()
+        for _ in range(5):
+            city = City(title=fake.city())
+            db.session.add(city)
+
+        for _ in range(10):
+            user = User(username=fake.user_name(), email=fake.email(), password=fake.password(), role='user')
+            db.session.add(user)
+
+        # Генерация данных для Company
+        for _ in range(5):
+            company = Company(name=fake.company(), industry_id=fake.random_int(min=1, max=3), description=fake.text(),
+                              logo_url=fake.image_url())
+            db.session.add(company)
+
+        for _ in range(10):
+            job = Job(title=fake.job(), description=fake.text(), salary=fake.random_int(min=10000, max=100000),
+                      experience=fake.job(), company_id=fake.random_int(min=1, max=10),
+                      type_id=fake.random_int(min=1, max=3),
+                      city_id=fake.random_int(min=1, max=10), employment_id=fake.random_int(min=1, max=3))
+            db.session.add(job)
+
+        job_application_statuses = ["Принято", "Отклонено", "На рассмотрении"]
+        for _ in range(10):
+            jobapplication = JobApplication(
+                resume_id=fake.random_int(min=1, max=50),
+                job_id=fake.random_int(min=1, max=50),
+                status=fake.random_element(job_application_statuses)
+            )
+            db.session.add(jobapplication)
+
+        for _ in range(3):
+            employment = Employment(title=fake.job())
+            db.session.add(employment)
+
+        for _ in range(3):
+            worktype = WorkType(title=fake.job())
+            db.session.add(worktype)
+
+        for _ in range(3):
+            industry = Industry(title=fake.job())
+            db.session.add(industry)
+
+        for user_id in range(1, 16):
+            resume = Resume(
+                user_id=user_id,
+                description=fake.text(max_nb_chars=200),
+                experience=fake.text(max_nb_chars=500),
+                education=fake.text(max_nb_chars=300),
+                skills=fake.text(max_nb_chars=200),
+                contact_info=fake.text(max_nb_chars=200),
+            )
+            db.session.add(resume)
+
+        db.session.commit()
 
     return app

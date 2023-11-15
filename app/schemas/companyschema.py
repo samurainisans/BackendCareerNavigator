@@ -1,4 +1,3 @@
-# schemas/company_schema.py
 from app import ma
 from app.models.company import Company
 from app.models.industry import Industry
