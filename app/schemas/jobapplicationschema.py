@@ -3,18 +3,17 @@ from marshmallow import fields
 from app import ma
 from app.models.job import Job
 from app.models.jobapplication import JobApplication
-from app.models.user import User
+from app.models.resume import Resume
 
 
 class JobApplicationSchema(ma.SQLAlchemyAutoSchema):
     job = fields.Method("get_job")
-    user = fields.Method("get_user")
+    resume = fields.Method("get_resume")
 
     class Meta:
         model = JobApplication
         fields = ("application_id",
                   "job",
-                  "user",
                   "resume",
                   "cover_letter",
                   "application_date",
@@ -23,9 +22,13 @@ class JobApplicationSchema(ma.SQLAlchemyAutoSchema):
     def get_job(self, obj):
         from app.schemas.jobschema import JobSchema
         job = Job.query.get(obj.job_id)
+        if job is None:
+            return None  # или другое подходящее значение
         return JobSchema().dump(job)
 
-    def get_user(self, obj):
-        from app.schemas.userschema import UserSchema
-        user = User.query.get(obj.user_id)
-        return UserSchema().dump(user)
+    def get_resume(self, obj):
+        from app.schemas.resumeschema import ResumeSchema
+        resume = Resume.query.get(obj.resume_id)
+        if resume is None:
+            return None  # или другое подходящее значение
+        return ResumeSchema().dump(resume)

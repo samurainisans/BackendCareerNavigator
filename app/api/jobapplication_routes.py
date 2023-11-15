@@ -17,12 +17,7 @@ from app.schemas.jobapplicationschema import JobApplicationSchema
 @jwt_required()
 def get_job_applications():
     try:
-        current_user = get_jwt_identity()
-        user_id = current_user['user_id']
-
-        # Фильтруем отклики только для текущего пользователя
-        job_applications = JobApplication.query.filter_by(user_id=user_id).all()
-
+        job_applications = JobApplication.query.all()
         return jsonify({"status_code": 200, "result": JobApplicationSchema(many=True).dump(job_applications)}), 200
     except Exception as e:
         return jsonify({"status_code": 500, "error": str(e)}), 500
@@ -32,40 +27,24 @@ def get_job_applications():
 @jwt_required()
 def add_job_application():
     try:
-        current_user = get_jwt_identity()
-        user_id = current_user['user_id']
+        application_data = request.json
 
-        job_data = request.json.get('job')
-        if not job_data:
-            return jsonify({"msg": "Job data is required", "status_code": 400}), 400
+        # Извлекаем job_id и resume_id из вложенных объектов
+        job_id = application_data.get('job', {}).get('job_id')
+        resume_id = application_data.get('resume', {}).get('resume_id')
 
-        job_id = job_data.get('job_id')
-        if job_id is None:
-            return jsonify({"msg": "JobId is required in job data", "status_code": 400}), 400
+        if not job_id or not resume_id:
+            return jsonify({"msg": "Job ID and Resume ID are required", "status_code": 400}), 400
 
-        try:
-            job_id = int(job_id)
-        except ValueError:
-            return jsonify({"msg": "JobId must be an integer", "status_code": 400}), 400
-
-        job = Job.query.get(job_id)
-        if not job:
-            return jsonify({"msg": "Job not found", "status_code": 404}), 404
-
-        job_application_data = {
-            'user_id': user_id,
-            'job_id': job_id,
-            'application_date': datetime.utcnow(),
-            'status': 'на рассмотрении'
-        }
-
-        job_application = JobApplication(**job_application_data)
+        # Создание и сохранение новой заявки на работу
+        job_application = JobApplication(job_id=job_id, resume_id=resume_id, status='На рассмотрении')
         db.session.add(job_application)
         db.session.commit()
 
         return jsonify({"msg": "Job application added successfully", "status_code": 201}), 201
     except Exception as e:
         return jsonify({"msg": str(e), "status_code": 500}), 500
+
 
 
 @api_blueprint.route('/jobapplications/<int:application_id>', methods=['PUT'])
