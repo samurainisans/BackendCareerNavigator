@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 18: update">
+    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 19: fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/jobapplication_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/jobapplication_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/resumeschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/resumeschema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/userschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/userschema.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +23,20 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Alexey-GM&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="476e8c9e-e95a-4625-967d-128375d48678" />
+        <option name="url" value="https://github.com/samurainisans/BackendCareerNavigator.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -85,7 +101,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700069893579</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Commit 19: fix">
+      <option name="closed" value="true" />
+      <created>1700077614443</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1700077614443</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -101,6 +125,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Commit 18: update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit 18: update" />
+    <MESSAGE value="Commit 19: fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit 19: fix" />
   </component>
 </project>

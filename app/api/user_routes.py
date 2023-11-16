@@ -10,9 +10,11 @@ from flask_jwt_extended import JWTManager
 api_blueprint = Blueprint('api', __name__)
 jwt = JWTManager()
 
+
 def create_token(user_id, role):
     access_token = create_access_token(identity={"user_id": user_id, "role": role})
     return access_token
+
 
 @api_blueprint.route('/login', methods=['POST'])
 def login():
@@ -23,7 +25,8 @@ def login():
 
         user = User.query.filter_by(email=email, password=password).first()
         if not user:
-            return jsonify({"error": "Invalid credentials", "msg": "Login or password incorrect", "status_code": 401}), 401
+            return jsonify(
+                {"error": "Invalid credentials", "msg": "Login or password incorrect", "status_code": 401}), 401
 
         access_token = create_token(user.user_id, user.role)
 
@@ -35,23 +38,40 @@ def login():
 @api_blueprint.route('/register', methods=['POST'])
 def register():
     try:
-        user_data = request.json
+        user_data = request.get_json(force=True)
 
+        print(user_data)
+
+        # Проверка наличия пользователя с таким email
         if User.query.filter_by(email=user_data.get('email')).first():
-            return jsonify({"error": "User with this email already exists", "msg": "User already exists", "status_code": 400}), 400
+            return jsonify(
+                {"error": "User with this email already exists", "msg": "User already exists", "status_code": 400}), 400
 
-        user = UserSchema().load(user_data)
-        db.session.add(user)
+        # Создание объекта NewUser из полученных данных
+        new_user = User(
+            first_name=user_data.get('firstName'),
+            last_name=user_data.get('lastName'),
+            email=user_data.get('email'),
+            phone_number=user_data.get('phone'),
+            password=user_data.get('password'),
+            role="user"
+        )
+
+        # Сохранение пользователя в базе данных
+        db.session.add(new_user)
         db.session.commit()
 
-        access_token = create_token(user.user_id, user.role)
+        # Создание токена доступа
+        access_token = create_token(new_user.user_id, new_user.role)
 
+        # Формирование ответа
         response = {
             "access_token": access_token,
             "status_code": 201,
             "msg": "Registration successful"
         }
         return jsonify(response), 201
+
     except ValidationError as ve:
         return jsonify({"error": str(ve), "status_code": 400}), 400
     except Exception as e:
@@ -69,6 +89,7 @@ from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user_blueprint = Blueprint('user', __name__)
+
 
 @api_blueprint.route('/user', methods=['GET'])
 @jwt_required()
@@ -102,7 +123,6 @@ def get_user():
 
         # Возвращаем данные пользователя и его резюме
         user_data = {
-            "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "phone_number": user.phone_number,
@@ -114,7 +134,9 @@ def get_user():
         return jsonify({"user": user_data, "status_code": 200}), 200
 
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e), "status_code": 500}), 500
+
 
 @api_blueprint.route('/users', methods=['POST'])
 def add_user():

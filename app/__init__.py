@@ -52,7 +52,7 @@ def create_app():
     #         db.session.add(city)
     #
     #     for _ in range(10):
-    #         user = User(username=fake.user_name(), email=fake.email(), password=fake.password(), role=random.choice(
+    #         user = User(first_name=fake.first_name(), last_name=fake.last_name(), phone_number=fake.phone_number(), email=fake.email(), password=fake.password(), role=random.choice(
     #             ['employer', 'user'])
     #         )
     #         db.session.add(user)
