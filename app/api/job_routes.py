@@ -65,42 +65,48 @@ def get_jobs_by_hr_id():
         return jsonify({"error": str(e), "status_code": 500}), 500
 
 @api_blueprint.route('/jobs', methods=['POST'])
+@jwt_required()
 def add_job():
     try:
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
         job_data = request.json
-        if 'date_posted' in job_data and job_data['date_posted']:
-            job_data['date_posted'] = datetime.fromisoformat(job_data['date_posted'])
 
-        if 'work_type' in job_data:
-            work_type_data = job_data.pop('work_type')
-            work_type = WorkType.query.filter_by(type_id=work_type_data['type_id']).first()
-            if not work_type:
-                return create_response({"error": "WorkType not found"}, 404)
-            job_data['type_id'] = work_type.type_id
+        # Получение id города по его названию
+        city = City.query.filter_by(title=job_data['city']).first()
+        if not city:
+            return create_response({"error": "City not found"}, 404)
 
-        if 'city' in job_data:
-            city_data = job_data.pop('city')
-            city = City.query.filter_by(city_id=city_data['city_id']).first()
-            if not city:
-                return create_response({"error": "City not found"}, 404)
-            job_data['city_id'] = city.city_id
+        employment = Employment.query.filter_by(title=job_data['employment']).first()
+        if not employment:
+            return create_response({"error": "Employment not found"}, 404)
 
-        if 'employment' in job_data:
-            employment_data = job_data.pop('employment')
-            employment = Employment.query.filter_by(employment_id=employment_data['employment_id']).first()
-            if not employment:
-                return create_response({"error": "Employment not found"}, 404)
-            job_data['employment_id'] = employment.employment_id
+        # Получение id типа работы по его названию
+        work_type = WorkType.query.filter_by(title=job_data['type']).first()
+        if not work_type:
+            return create_response({"error": "WorkType not found"}, 404)
 
-        if 'company' in job_data:
-            company_data = job_data.pop('company')
-            company = Company.query.filter_by(company_id=company_data['company_id']).first()
-            if not company:
-                return create_response({"error": "Company not found"}, 404)
-            job_data['company_id'] = company.company_id
+        # Получение company_id по hr_id пользователя из токена
+        company = Company.query.filter_by(hr_id=user_id).first()
+        if not company:
+            return create_response({"error": "User is not associated with any company"}, 400)
 
-        job = Job(**job_data)
-        db.session.add(job)
+        # Создание нового объекта Job
+        new_job = Job(
+            company_id=company.company_id,
+            type_id=work_type.type_id,
+            city_id=city.city_id,
+            employment_id=employment.employment_id,  # Проверьте, где вы получаете employment_id из запроса
+            title=job_data['title'],
+            description=job_data['description'],
+            requirements="123",
+            salary=job_data['salary'],
+            experience=job_data['experience'],
+            date_posted=datetime.utcnow()  # или используйте job_data['date_posted'], если он передается
+        )
+
+        db.session.add(new_job)
         db.session.commit()
 
         return jsonify({"msg": "Job added successfully", "status_code": 201}), 201
@@ -110,6 +116,7 @@ def add_job():
     except ValidationError as ve:
         return create_response({"error": str(ve)}, 400)
     except Exception as e:
+        print(e)
         return create_response({"error": str(e)}, 500)
 
 

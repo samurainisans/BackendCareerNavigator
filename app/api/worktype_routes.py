@@ -9,4 +9,4 @@ from app.schemas.worktypeschema import WorkTypeSchema
 @api_blueprint.route('/worktypes', methods=['GET'])
 def get_worktypes():
     worktypes = WorkType.query.all()
-    return jsonify(WorkTypeSchema(many=True).dump(worktypes))
+    return jsonify({"result": WorkTypeSchema(many=True).dump(worktypes), "status_code": 200})
