@@ -1,7 +1,7 @@
-from app import ma
-from app.models.resume import Resume
 from marshmallow import fields
 
+from app import ma
+from app.models.resume import Resume
 from app.models.user import User
 
 
@@ -12,7 +12,7 @@ class ResumeSchema(ma.SQLAlchemyAutoSchema):
         model = Resume
         load_instance = True
         fields = (
-            "title", "resume_id", "user", "experience", "education", "skills",
+            "title", "resume_id", "user", "experience", "education", "description", "skills",
             "contact_info")
 
     def get_user(self, obj):

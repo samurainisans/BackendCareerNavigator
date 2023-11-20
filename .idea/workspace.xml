@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 19: fix">
+    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 20: fix +">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/company_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/company_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/job_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/job_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/jobapplication_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/jobapplication_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/api/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/userschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/userschema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/company.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/company.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/companyschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/companyschema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/resumeschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/resumeschema.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +112,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700077614443</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Commit 20: fix +">
+      <option name="closed" value="true" />
+      <created>1700121192606</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1700121192606</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -126,6 +137,17 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Commit 18: update" />
     <MESSAGE value="Commit 19: fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit 19: fix" />
+    <MESSAGE value="Commit 20: fix +" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit 20: fix +" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/api/jobapplication_routes.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -30,7 +30,8 @@ def login():
 
         access_token = create_token(user.user_id, user.role)
 
-        return jsonify({"access_token": access_token, "msg": "Login successful", "status_code": 200}), 200
+        return jsonify(
+            {"access_token": access_token, "msg": "Login successful", "status_code": 200, "role": user.role}), 200
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
 
@@ -45,7 +46,7 @@ def register():
         # Проверка наличия пользователя с таким email
         if User.query.filter_by(email=user_data.get('email')).first():
             return jsonify(
-                {"error": "User with this email already exists", "msg": "User already exists", "status_code": 400}), 400
+                {"error": "User with this email already exists", "msg": "User already exists", "status_code": 400, }), 400
 
         # Создание объекта NewUser из полученных данных
         new_user = User(
@@ -54,7 +55,7 @@ def register():
             email=user_data.get('email'),
             phone_number=user_data.get('phone'),
             password=user_data.get('password'),
-            role="user"
+            role=user_data.get('role')
         )
 
         # Сохранение пользователя в базе данных
@@ -68,7 +69,8 @@ def register():
         response = {
             "access_token": access_token,
             "status_code": 201,
-            "msg": "Registration successful"
+            "msg": "Registration successful",
+            "role": new_user.role
         }
         return jsonify(response), 201
 

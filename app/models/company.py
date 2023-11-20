@@ -7,3 +7,4 @@ class Company(db.Model):
     industry_id = db.Column(db.Integer, db.ForeignKey('industry.industry_id'), nullable=False)
     description = db.Column(db.Text, nullable=True)
     logo_url = db.Column(db.String(255), nullable=True)
+    hr_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))

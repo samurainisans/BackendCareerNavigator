@@ -6,12 +6,37 @@ from marshmallow import ValidationError
 
 from app import db
 from app.api.user_routes import api_blueprint
+from app.models.company import Company
 from app.models.job import Job
 
 from app.models.jobapplication import JobApplication
 from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.jobapplicationschema import JobApplicationSchema
+
+
+@api_blueprint.route('/jobapplications/all', methods=['GET'])
+@jwt_required()
+def get_job_applications_all():
+    try:
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        user_company_id = Company.query.filter_by(hr_id=user_id).first().company_id
+
+        job_id = request.args.get('job_id')
+        if not job_id:
+            return jsonify({"msg": "Job ID is required", "status_code": 400}), 400
+
+        job_applications = JobApplication.query \
+            .join(Job, JobApplication.job_id == Job.job_id) \
+            .filter(Job.company_id == user_company_id, Job.job_id == job_id) \
+            .all()
+
+        # Возвращать только отфильтрованные отклики
+        return jsonify({"status_code": 200, "result": JobApplicationSchema(many=True).dump(job_applications)}), 200
+    except Exception as e:
+        return jsonify({"status_code": 500, "error": str(e)}), 500
 
 
 @api_blueprint.route('/jobapplications', methods=['GET'])
@@ -99,5 +124,38 @@ def delete_job_application(application_id):
         db.session.commit()
 
         return jsonify({"msg": "Job application deleted successfully", "status_code": 200}), 200
+    except Exception as e:
+        return jsonify({"msg": str(e), "status_code": 500}), 500
+
+
+@api_blueprint.route('/jobapplications/<int:application_id>/reject', methods=['PATCH'])
+def reject_job_application(application_id):
+    try:
+        # Находим отклик по application_id
+        application = JobApplication.query.get(application_id)
+        if not application:
+            return jsonify({"msg": "JobApplication not found", "status_code": 404}), 404
+
+        # Обновляем статус отклика на "Отклонено"
+        application.status = 'Отклонено'
+        db.session.commit()
+
+        return jsonify({"msg": "Job Application rejected", "status_code": 200}), 200
+    except Exception as e:
+        return jsonify({"msg": str(e), "status_code": 500}), 500
+
+@api_blueprint.route('/jobapplications/<int:application_id>/accept', methods=['PATCH'])
+def accept_job_application(application_id):
+    try:
+        # Находим отклик по application_id
+        application = JobApplication.query.get(application_id)
+        if not application:
+            return jsonify({"msg": "JobApplication not found", "status_code": 404}), 404
+
+        # Обновляем статус отклика на "Принято"
+        application.status = 'Принято'
+        db.session.commit()
+
+        return jsonify({"msg": "Job Application accepted", "status_code": 200}), 200
     except Exception as e:
         return jsonify({"msg": str(e), "status_code": 500}), 500

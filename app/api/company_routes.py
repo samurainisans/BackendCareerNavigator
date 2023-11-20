@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from flask_jwt_extended import jwt_required, JWTManager
+from flask_jwt_extended import jwt_required, JWTManager, get_jwt_identity
 from marshmallow import ValidationError
 
 from app import db
@@ -9,6 +9,7 @@ from app.models.industry import Industry
 from app.schemas.companyschema import CompanySchema
 
 jwt = JWTManager()
+
 
 @api_blueprint.route('/companies', methods=['GET'])
 def get_companies():
@@ -58,3 +59,23 @@ def update_company(company_id):
         return jsonify({"msg": str(ve), "status_code": 400}), 400
     except Exception as e:
         return jsonify({"msg": str(e), "status_code": 500}), 500
+
+
+@api_blueprint.route('/companies/<int:company_id>', methods=['PATCH'])
+@jwt_required()
+def update_company_field(company_id):
+    try:
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+        company = Company.query.filter_by(company_id=company_id).first()
+        company.hr_id = user_id
+        db.session.commit()
+
+        return jsonify({"msg": "Company hr_id updated successfully", "status_code": 200}), 200
+
+    except ValidationError as ve:
+        return jsonify({"msg": str(ve), "status_code": 400}), 400
+    except Exception as e:
+        print(e)
+        return jsonify({"msg": str(e), "status_code": 500}), 500
+

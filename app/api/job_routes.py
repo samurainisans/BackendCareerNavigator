@@ -13,8 +13,10 @@ from app.models.employment import Employment
 
 from app.models.job import Job
 from app.models.jobapplication import JobApplication
+from app.models.resume import Resume
 from app.models.worktype import WorkType
 from app.schemas.jobschema import JobSchema
+from app.schemas.resumeschema import ResumeSchema
 
 
 def create_response(data, status_code=200):
@@ -41,6 +43,26 @@ def get_jobs():
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
 
+
+@api_blueprint.route('/jobs/hr', methods=['GET'])
+@jwt_required()
+def get_jobs_by_hr_id():
+    try:
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        # Получаем компанию пользователя
+        company = Company.query.filter_by(hr_id=user_id).first()
+
+        if not company:
+            return jsonify({"error": "User is not associated with any company", "status_code": 400}), 400
+
+        # Получаем все вакансии связанные с компанией
+        jobs = Job.query.filter_by(company_id=company.company_id).all()
+
+        return create_response(JobSchema(many=True).dump(jobs), 200)
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500
 
 @api_blueprint.route('/jobs', methods=['POST'])
 def add_job():
