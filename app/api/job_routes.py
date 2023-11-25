@@ -100,6 +100,9 @@ def add_job():
             employment_id=employment.employment_id,  # Проверьте, где вы получаете employment_id из запроса
             title=job_data['title'],
             description=job_data['description'],
+            options=job_data['options'],
+            conditions=job_data['conditions'],
+            work_variant=job_data['workVariant'],
             requirements="123",
             salary=job_data['salary'],
             experience=job_data['experience'],

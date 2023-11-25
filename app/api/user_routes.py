@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 from app import db
+from app.models.city import City
 from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.userschema import UserSchema
@@ -112,6 +113,7 @@ def get_user():
         # Преобразование резюме в список словарей
         resumes_data = []
         for resume in resumes:
+            city = City.query.filter_by(city_id=resume.city_id).first()
             resume_data = {
                 "id": resume.resume_id,
                 "title": resume.title,
@@ -119,7 +121,13 @@ def get_user():
                 "experience": resume.experience,
                 "education": resume.education,
                 "skills": resume.skills,
-                "contact_info": resume.contact_info
+                "contact_info": resume.contact_info,
+                "age": resume.age,
+                "citizenship": resume.citizenhip,
+                "city": {
+                    "title": city.title,
+                    "city_id": city.city_id
+                }
             }
             resumes_data.append(resume_data)
 

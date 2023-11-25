@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from app import db
 from app.api.user_routes import api_blueprint
+from app.models.city import City
 from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.resumeschema import ResumeSchema
@@ -14,18 +15,24 @@ def add_resume():
     try:
         current_user = get_jwt_identity()
         user_id = current_user['user_id']
+        resume_data = request.json
 
         user = User.query.get(user_id)
         if not user:
             return jsonify({"status_code": 404, "msg": "User not found"}), 404
-
-        resume_data = request.json
+        print(resume_data)
+        city = City.query.filter_by(title=resume_data['city']).first()
+        if not city:
+            return jsonify({"status_code": 404, "msg": "City not found"}), 404
 
         new_resume = Resume(
             user_id=user_id,
             title=resume_data.get('title', ''),
             description=resume_data.get('description', ''),
             experience=resume_data.get('experience', ''),
+            age=resume_data.get('age', ''),
+            citizenhip=resume_data.get('citizenship', ''),
+            city_id=city.city_id,
             education=resume_data.get('education', ''),
             skills=resume_data.get('skills', ''),
             contact_info=resume_data.get('contactInfo', '')
@@ -36,6 +43,7 @@ def add_resume():
 
         return jsonify({"status_code": 201, "msg": "Resume added successfully"}), 201
     except Exception as e:
+        print(e)
         return jsonify({"status_code": 500, "msg": str(e)}), 500
 
 

@@ -4,11 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 21: more hr features">
+    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 23: db">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/api/job_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/job_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/worktype_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/worktype_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/industry.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/industry.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/resume_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/resume_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/job.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/job.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/resume.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/resume.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/jobschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/jobschema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/resumeschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/resumeschema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instance/vacancies.db" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,13 +53,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "dev",
+    "last_opened_file_path": "C:/Users/TheHa/PycharmProjects/BackendCareerNavigator"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="run" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="BackendCareerNavigator" />
@@ -124,7 +130,23 @@
       <option name="project" value="LOCAL" />
       <updated>1700480399698</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Commit 22: more hr features+">
+      <option name="closed" value="true" />
+      <created>1700485752947</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1700485752947</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Commit 23: db">
+      <option name="closed" value="true" />
+      <created>1700486740962</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1700486740962</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -143,7 +165,9 @@
     <MESSAGE value="Commit 19: fix" />
     <MESSAGE value="Commit 20: fix +" />
     <MESSAGE value="Commit 21: more hr features" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit 21: more hr features" />
+    <MESSAGE value="Commit 22: more hr features+" />
+    <MESSAGE value="Commit 23: db" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit 23: db" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

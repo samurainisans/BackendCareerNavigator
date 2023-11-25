@@ -28,7 +28,10 @@ class JobSchema(ma.SQLAlchemyAutoSchema):
             "employment",
             "title",
             "description",
+            "conditions",
             "requirements",
+            "work_variant",
+            "options",
             "salary",
             "experience",
             "date_posted")
