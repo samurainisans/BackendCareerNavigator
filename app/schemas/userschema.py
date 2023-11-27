@@ -9,4 +9,5 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         # Указание, какие поля должны быть включены в сериализацию
-        fields = ("user_id", "first_name", "last_name", "phone_number", "email", "role", "password")
+        fields = (
+            "user_id", "first_name", "last_name", "registration_date", "phone_number", "email", "role", "password")

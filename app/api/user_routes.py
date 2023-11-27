@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 from app import db
@@ -54,6 +56,7 @@ def register():
             first_name=user_data.get('firstName'),
             last_name=user_data.get('lastName'),
             email=user_data.get('email'),
+            registration_date=datetime.utcnow(),
             phone_number=user_data.get('phone'),
             password=user_data.get('password'),
             role=user_data.get('role')
@@ -78,6 +81,7 @@ def register():
     except ValidationError as ve:
         return jsonify({"error": str(ve), "status_code": 400}), 400
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e), "status_code": 500}), 500
 
 
@@ -167,6 +171,7 @@ def add_user():
     except ValidationError as ve:
         return jsonify({"error": str(ve), "status_code": 400}), 400
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e), "status_code": 500}), 500
 
 

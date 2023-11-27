@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.extensions import db
 
 class User(db.Model):
@@ -6,6 +8,7 @@ class User(db.Model):
     last_name = db.Column(db.String(80))
     phone_number = db.Column(db.String(80))
     role = db.Column(db.String(80))
+    registration_date = db.Column(db.DateTime, default=datetime.utcnow)
     password = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
 

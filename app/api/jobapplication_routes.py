@@ -59,7 +59,6 @@ def get_job_applications():
         return jsonify({"status_code": 500, "error": str(e)}), 500
 
 
-
 @api_blueprint.route('/jobapplications', methods=['POST'])
 @jwt_required()
 def add_job_application():
@@ -144,6 +143,7 @@ def reject_job_application(application_id):
     except Exception as e:
         return jsonify({"msg": str(e), "status_code": 500}), 500
 
+
 @api_blueprint.route('/jobapplications/<int:application_id>/accept', methods=['PATCH'])
 def accept_job_application(application_id):
     try:
@@ -159,3 +159,45 @@ def accept_job_application(application_id):
         return jsonify({"msg": "Job Application accepted", "status_code": 200}), 200
     except Exception as e:
         return jsonify({"msg": str(e), "status_code": 500}), 500
+
+
+@api_blueprint.route('/report', methods=['GET'])
+@jwt_required()
+def get_report():
+    try:
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+
+        registered_users_count = User.query.filter(User.registration_date.between(start_date, end_date)).count()
+
+        created_jobs_count = Job.query.filter(Job.date_posted.between(start_date, end_date)).count()
+
+        job_applications_count = JobApplication.query.filter(
+            JobApplication.application_date.between(start_date, end_date)).count()
+
+        rejected_applications_count = JobApplication.query.filter(
+            JobApplication.application_date.between(start_date, end_date),
+            JobApplication.status == 'Отклонено'
+        ).count()
+
+        # Шаг 5: Получить количество принятых откликов за указанный период
+        accepted_applications_count = JobApplication.query.filter(
+            JobApplication.application_date.between(start_date, end_date),
+            JobApplication.status == 'Принято'
+        ).count()
+
+        report = {
+            "registered_users": registered_users_count,
+            "created_jobs": created_jobs_count,
+            "job_applications": job_applications_count,
+            "rejected_applications": rejected_applications_count,
+            "accepted_applications": accepted_applications_count,
+        }
+
+        return jsonify({"status_code": 200, "report": report}), 200
+
+    except Exception as e:
+        return jsonify({"status_code": 500, "error": str(e)}), 500
