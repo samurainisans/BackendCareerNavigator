@@ -165,6 +165,16 @@ def accept_job_application(application_id):
 @jwt_required()
 def get_report():
     try:
+        current_user = get_jwt_identity()
+        user_id = current_user['user_id']
+
+        user_company = Company.query.filter_by(hr_id=user_id).first()
+
+        if user_company is None:
+            return jsonify({"msg": "User's company not found", "status_code": 404}), 404
+
+        user_company_id = user_company.company_id
+
         start_date_str = request.args.get('start_date')
         end_date_str = request.args.get('end_date')
 
@@ -173,21 +183,30 @@ def get_report():
 
         registered_users_count = User.query.filter(User.registration_date.between(start_date, end_date)).count()
 
-        created_jobs_count = Job.query.filter(Job.date_posted.between(start_date, end_date)).count()
+        created_jobs_count = Job.query \
+            .filter(Job.company_id == user_company_id,
+                    Job.date_posted.between(start_date, end_date)) \
+            .count()
 
-        job_applications_count = JobApplication.query.filter(
-            JobApplication.application_date.between(start_date, end_date)).count()
+        job_applications_count = JobApplication.query \
+            .join(Job, JobApplication.job_id == Job.job_id) \
+            .filter(Job.company_id == user_company_id,
+                    JobApplication.application_date.between(start_date, end_date)) \
+            .count()
 
-        rejected_applications_count = JobApplication.query.filter(
-            JobApplication.application_date.between(start_date, end_date),
-            JobApplication.status == 'Отклонено'
-        ).count()
+        rejected_applications_count = JobApplication.query \
+            .join(Job, JobApplication.job_id == Job.job_id) \
+            .filter(Job.company_id == user_company_id,
+                    JobApplication.application_date.between(start_date, end_date),
+                    JobApplication.status == 'Отклонено') \
+            .count()
 
-        # Шаг 5: Получить количество принятых откликов за указанный период
-        accepted_applications_count = JobApplication.query.filter(
-            JobApplication.application_date.between(start_date, end_date),
-            JobApplication.status == 'Принято'
-        ).count()
+        accepted_applications_count = JobApplication.query \
+            .join(Job, JobApplication.job_id == Job.job_id) \
+            .filter(Job.company_id == user_company_id,
+                    JobApplication.application_date.between(start_date, end_date),
+                    JobApplication.status == 'Принято') \
+            .count()
 
         report = {
             "registered_users": registered_users_count,
@@ -200,4 +219,5 @@ def get_report():
         return jsonify({"status_code": 200, "report": report}), 200
 
     except Exception as e:
+        print(e)
         return jsonify({"status_code": 500, "error": str(e)}), 500

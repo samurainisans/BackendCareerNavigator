@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 24: new fields">
+    <list default="true" id="a7707bd7-c8ff-4580-b266-81f6ea521cc5" name="Changes" comment="Commit 25: added reports">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/api/jobapplication_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/jobapplication_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/userschema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/userschema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instance/vacancies.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/vacancies.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700899968817</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Commit 25: added reports">
+      <option name="closed" value="true" />
+      <created>1701082497394</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1701082497394</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -173,7 +177,8 @@
     <MESSAGE value="Commit 22: more hr features+" />
     <MESSAGE value="Commit 23: db" />
     <MESSAGE value="Commit 24: new fields" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit 24: new fields" />
+    <MESSAGE value="Commit 25: added reports" />
+    <option name="LAST_COMMIT_MESSAGE" value="Commit 25: added reports" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
