@@ -14,7 +14,7 @@ jwt = JWTManager()
 @api_blueprint.route('/companies', methods=['GET'])
 def get_companies():
     try:
-        companies = Company.query.all()
+        companies = Company.query.filter_by(status="accepted").all()
         if not companies:
             return jsonify({"error": "No companies found", "status_code": 404}), 404
         return jsonify({"result": CompanySchema(many=True).dump(companies), "status_code": 200}), 200
@@ -22,19 +22,48 @@ def get_companies():
         return jsonify({"error": str(e), "status_code": 500}), 500
 
 
+@api_blueprint.route('/pending_companies', methods=['GET'])
+def get_pending_companies():
+    try:
+        # Получаем компании с статусом "pending review"
+        pending_companies = Company.query.filter_by(status='pending review').all()
+
+        if not pending_companies:
+            return jsonify({"error": "No pending companies found", "status_code": 404}), 404
+
+        return jsonify({"result": CompanySchema(many=True).dump(pending_companies), "status_code": 200}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500
+
 @api_blueprint.route('/companies', methods=['POST'])
-@jwt_required()
 def add_company():
     try:
         company_data = request.json
-        industry_data = company_data.pop('industry')
-        industry = Industry(**industry_data)
-        db.session.merge(industry)
-        db.session.flush()
-        company_data['industry_id'] = industry.industry_id
-        company = Company(**company_data)
-        db.session.merge(company)
+        industry_title = company_data.get('industry')
+
+        # Проверяем, существует ли отрасль с указанным названием
+        industry = Industry.query.filter_by(title=industry_title).first()
+
+        if not industry:
+            # Если отрасли нет, создаем новую отрасль
+            industry = Industry(title=industry_title)
+            db.session.add(industry)
+            db.session.flush()
+
+        # Добавляем компанию
+        company = Company(
+            name=company_data.get('name'),
+            industry_id=industry.industry_id,
+            description=company_data.get('description'),
+            inn=company_data.get('inn'),
+            ogrn=company_data.get('ogrn'),
+            status='pending review'  # Устанавливаем начальный статус компании
+        )
+
+        db.session.add(company)
         db.session.commit()
+
         return jsonify({"msg": "Company added successfully", "status_code": 201}), 201
     except ValidationError as ve:
         return jsonify({"msg": str(ve), "status_code": 400}), 400
@@ -79,3 +108,56 @@ def update_company_field(company_id):
         print(e)
         return jsonify({"msg": str(e), "status_code": 500}), 500
 
+
+@api_blueprint.route('/companies/<int:company_id>/accept', methods=['PATCH'])
+@jwt_required()
+def accept_company(company_id):
+    try:
+        current_user = get_jwt_identity()
+        admin_role = "admin"  # Укажите вашу роль администратора
+
+        # Проверяем, что текущий пользователь является администратором
+        if current_user.get('role') != admin_role:
+            return jsonify({"error": "Access forbidden", "status_code": 403}), 403
+
+        # Получаем компанию по идентификатору
+        company = Company.query.filter_by(company_id=company_id).first()
+
+        if not company:
+            return jsonify({"msg": "Company not found", "status_code": 404}), 404
+
+        # Обновляем статус компании на "accepted"
+        company.status = "accepted"
+        db.session.commit()
+
+        return jsonify({"msg": "Company accepted successfully", "status_code": 200}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500
+
+
+@api_blueprint.route('/companies/<int:company_id>/reject', methods=['PATCH'])
+@jwt_required()
+def reject_company(company_id):
+    try:
+        current_user = get_jwt_identity()
+        admin_role = "admin"  # Укажите вашу роль администратора
+
+        # Проверяем, что текущий пользователь является администратором
+        if current_user.get('role') != admin_role:
+            return jsonify({"error": "Access forbidden", "status_code": 403}), 403
+
+        # Получаем компанию по идентификатору
+        company = Company.query.filter_by(company_id=company_id).first()
+
+        if not company:
+            return jsonify({"msg": "Company not found", "status_code": 404}), 404
+
+        # Обновляем статус компании на "denied"
+        company.status = "denied"
+        db.session.commit()
+
+        return jsonify({"msg": "Company rejected successfully", "status_code": 200}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e), "status_code": 500}), 500

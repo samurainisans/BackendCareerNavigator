@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 from app import db
 from app.models.city import City
+from app.models.company import Company
 from app.models.resume import Resume
 from app.models.user import User
 from app.schemas.userschema import UserSchema
@@ -29,7 +30,14 @@ def login():
         user = User.query.filter_by(email=email, password=password).first()
         if not user:
             return jsonify(
-                {"error": "Invalid credentials", "msg": "Login or password incorrect", "status_code": 401}), 401
+                {"access_token": "", "msg": "Login or password incorrect", "status_code": 401, "role": ""}), 401
+
+        if user.status == "denied":
+            return jsonify(
+                {"access_token": "", "msg": "Ваша регистрация была отклонена", "status_code": 403, "role": user.role})
+        if user.status == "pending review":
+            return jsonify(
+                {"access_token": "", "msg": "Ваша регистрация еще не одобрена, попробуйте позже", "status_code": 403, "role": user.role})
 
         access_token = create_token(user.user_id, user.role)
 
@@ -38,6 +46,45 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
 
+
+@api_blueprint.route('/pending_employers', methods=['GET'])
+@jwt_required()
+def get_pending_employers():
+    try:
+        # Получаем текущего пользователя
+        current_user = get_jwt_identity()
+
+        # Проверяем, является ли текущий пользователь администратором
+        if current_user['role'] != 'admin':
+            return jsonify({"error": "Access forbidden", "status_code": 403}), 403
+
+        # Получаем всех пользователей с ролью "employer" и статусом "pending review"
+        pending_employers = User.query.filter_by(role='employer', status='pending review').all()
+
+
+        # Преобразуем данные в список словарей
+        pending_employers_data = []
+        for employer in pending_employers:
+            company = Company.query.filter_by(hr_id=employer.user_id).first()
+            print(company)
+            employer_data = {
+                "user_id": employer.user_id,
+                "first_name": employer.first_name,
+                "last_name": employer.last_name,
+                "email": employer.email,
+                "phone_number": employer.phone_number,
+                "registration_date": employer.registration_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "company_name": company.name,
+                "status": employer.status
+            }
+            pending_employers_data.append(employer_data)
+
+        # Возвращаем данные о пользователях
+        return jsonify({"pending_employers": pending_employers_data, "status_code": 200}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e), "status_code": 500}), 500
 
 @api_blueprint.route('/register', methods=['POST'])
 def register():
@@ -51,6 +98,13 @@ def register():
             return jsonify(
                 {"error": "User with this email already exists", "msg": "User already exists", "status_code": 400, }), 400
 
+        status = ''
+        if user_data.get('role') == 'user':
+            status = 'accepted'
+        if user_data.get('role') == 'employer':
+            status = 'pending review'
+
+
         # Создание объекта NewUser из полученных данных
         new_user = User(
             first_name=user_data.get('firstName'),
@@ -59,7 +113,8 @@ def register():
             registration_date=datetime.utcnow(),
             phone_number=user_data.get('phone'),
             password=user_data.get('password'),
-            role=user_data.get('role')
+            role=user_data.get('role'),
+            status=status
         )
 
         # Сохранение пользователя в базе данных
@@ -189,3 +244,37 @@ def update_user(user_id):
         return jsonify({"error": str(ve), "status_code": 400}), 400
     except Exception as e:
         return jsonify({"error": str(e), "status_code": 500}), 500
+
+
+@api_blueprint.route('/registration/<int:user_id>/reject', methods=['PATCH'])
+def reject_registration_application(user_id):
+    try:
+
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"msg": "user not found", "status_code": 404}), 404
+
+        # Обновляем статус отклика на "Отклонено"
+        user.status = 'accepted'
+        db.session.commit()
+
+        return jsonify({"msg": "Registration Application rejected", "status_code": 200}), 200
+    except Exception as e:
+        return jsonify({"msg": str(e), "status_code": 500}), 500
+
+
+@api_blueprint.route('/registration/<int:user_id>/accept', methods=['PATCH'])
+def accept_registration_application(user_id):
+    try:
+
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"msg": "user not found", "status_code": 404}), 404
+
+        # Обновляем статус отклика на "Отклонено"
+        user.status = 'denied'
+        db.session.commit()
+
+        return jsonify({"msg": "Registration Application accepted", "status_code": 200}), 200
+    except Exception as e:
+        return jsonify({"msg": str(e), "status_code": 500}), 500

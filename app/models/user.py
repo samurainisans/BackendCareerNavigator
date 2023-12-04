@@ -11,4 +11,5 @@ class User(db.Model):
     registration_date = db.Column(db.DateTime, default=datetime.utcnow)
     password = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
+    status = db.Column(db.String(80))
 

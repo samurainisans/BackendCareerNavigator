@@ -10,7 +10,7 @@ class CompanySchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = Company
-        fields = ("company_id", "name", "description", "logo_url", "industry", "hr_id")
+        fields = ("company_id", "name", "description", "logo_url", "industry", "hr_id", "inn", "ogrn")
         load_instance = True
 
     def get_industry(self, obj):
